@@ -33,10 +33,35 @@ describe("Rover class", function() {
     let commands = [new Command('STATUS_CHECK')];
     let message = new Message('Test message with Status Check', commands);
     let testRover = new Rover(98382);   
-    expect(testRover.receiveMessage(message).results).toContain('roverStatus');
-    expect(testRover.receiveMessage(message).results).toContain('mode');
-    expect(testRover.receiveMessage(message).results).toContain('generatorWatts');
-    expect(testRover.receiveMessage(message).results).toContain('position');
+    expect(testRover.receiveMessage(message).results).toEqual(expect.arrayContaining([expect.objectContaining({'completed': expect.any(Boolean), 'roverStatus': expect.objectContaining({'mode': expect.any(String), 'generatorWatts': expect.any(Number), 'position': expect.any(Number)})})]));
+    //expect(testRover.receiveMessage(message).results[1]).toEqual(expect.objectContaining({'mode': expect.any(String), 'generatorWatts': expect.any(Number), 'position': expect.any(Number)}));
+    //expect(testRover.receiveMessage(message).results).toContain('generatorWatts');
+    //expect(testRover.receiveMessage(message).results).toContain('position');
+  });
+
+  it("responds correctly to the mode change command", () => {
+    let commands = [new Command('MODE_CHANGE', 'LOW_POWER')];
+    let message = new Message('Test message with MODE_CHANGE command', commands);
+    let testRover = new Rover(98382);   
+    expect(testRover.receiveMessage(message).results[0].completed).toBe(true);
+    expect(testRover.roverStatus().mode).toBe('LOW_POWER');
+  });
+
+  it("responds with a false completed value when attempting to move in LOW_POWER mode", () => {
+    let commands = [new Command('MODE_CHANGE', 'LOW_POWER'), new Command('MOVE', 12345)];
+    let message = new Message('Test message with two commands', commands);
+    let testRover = new Rover(98382);
+    expect(testRover.receiveMessage(message).results[0].completed).toBe(true);   
+    expect(testRover.roverStatus().mode).toBe('LOW_POWER');
+    expect(testRover.receiveMessage(message).results[1].completed).toBe(false);
+  });
+
+  it("responds with the position for the move command", () => {
+    let commands = [new Command('MOVE', 12345)];
+    let message = new Message('Test message with a MOVE command', commands);
+    let testRover = new Rover(98382);
+    expect(testRover.receiveMessage(message).results[0].completed).toBe(true);   
+    expect(testRover.roverStatus().position).toBe(12345);
   });
 
 
