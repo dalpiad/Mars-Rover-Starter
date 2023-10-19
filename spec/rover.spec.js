@@ -34,9 +34,6 @@ describe("Rover class", function() {
     let message = new Message('Test message with Status Check', commands);
     let testRover = new Rover(98382);   
     expect(testRover.receiveMessage(message).results).toEqual(expect.arrayContaining([expect.objectContaining({'completed': expect.any(Boolean), 'roverStatus': expect.objectContaining({'mode': expect.any(String), 'generatorWatts': expect.any(Number), 'position': expect.any(Number)})})]));
-    //expect(testRover.receiveMessage(message).results[1]).toEqual(expect.objectContaining({'mode': expect.any(String), 'generatorWatts': expect.any(Number), 'position': expect.any(Number)}));
-    //expect(testRover.receiveMessage(message).results).toContain('generatorWatts');
-    //expect(testRover.receiveMessage(message).results).toContain('position');
   });
 
   it("responds correctly to the mode change command", () => {
